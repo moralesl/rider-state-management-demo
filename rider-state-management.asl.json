@@ -1,0 +1,268 @@
+{
+  "Comment": "A description of my state machine",
+  "StartAt": "Is rider id and next state valid?",
+  "States": {
+    "Is rider id and next state valid?": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "And": [
+            {
+              "Variable": "$.input.rider_id",
+              "IsPresent": true
+            },
+            {
+              "Variable": "$.input.next_state",
+              "IsPresent": true
+            },
+            {
+              "Or": [
+                {
+                  "Variable": "$.input.next_state",
+                  "StringEquals": "Not Working"
+                },
+                {
+                  "Variable": "$.input.next_state",
+                  "StringEquals": "Available"
+                },
+                {
+                  "Variable": "$.input.next_state",
+                  "StringEquals": "Starting"
+                },
+                {
+                  "Variable": "$.input.next_state",
+                  "StringEquals": "Working"
+                }
+              ]
+            }
+          ],
+          "Next": "Get current rider state"
+        }
+      ],
+      "Default": "Send event to DLQ for manual handling"
+    },
+    "Send event to DLQ for manual handling": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sqs:sendMessage",
+      "Parameters": {
+        "MessageBody.$": "$",
+        "QueueUrl": "https://sqs.us-east-1.amazonaws.com/690431608027/RiderStateDLQ-CDK"
+      },
+      "Next": "Fail"
+    },
+    "Get current rider state": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::dynamodb:getItem",
+      "Parameters": {
+        "TableName": "RiderStates-CDK",
+        "Key": {
+          "Area#Entity": {
+            "S.$": "$.input.rider_id"
+          }
+        }
+      },
+      "Next": "Is next state a valid transition?",
+      "ResultSelector": {
+        "rider_id.$": "$.Item.Area#Entity.S",
+        "timestamp.$": "$.Item.Timestamp.N",
+        "state.$": "$.Item.State.S",
+        "lat.$": "$.Item.Lat.N",
+        "long.$": "$.Item.Long.N"
+      },
+      "ResultPath": "$.rider"
+    },
+    "Is next state a valid transition?": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Or": [
+            {
+              "And": [
+                {
+                  "Variable": "$.rider.state",
+                  "StringEquals": "Not Working"
+                },
+                {
+                  "Variable": "$.input.next_state",
+                  "StringEquals": "Available"
+                }
+              ]
+            },
+            {
+              "And": [
+                {
+                  "Variable": "$.rider.state",
+                  "StringEquals": "Not Working"
+                },
+                {
+                  "Variable": "$.input.next_state",
+                  "StringEquals": "Starting"
+                }
+              ]
+            },
+            {
+              "And": [
+                {
+                  "Variable": "$.rider.state",
+                  "StringEquals": "Available"
+                },
+                {
+                  "Variable": "$.input.next_state",
+                  "StringEquals": "Not Working"
+                }
+              ]
+            },
+            {
+              "And": [
+                {
+                  "Variable": "$.rider.state",
+                  "StringEquals": "Available"
+                },
+                {
+                  "Variable": "$.input.next_state",
+                  "StringEquals": "Starting"
+                }
+              ]
+            },
+            {
+              "And": [
+                {
+                  "Variable": "$.rider.state",
+                  "StringEquals": "Starting"
+                },
+                {
+                  "Variable": "$.input.next_state",
+                  "StringEquals": "Not Working"
+                }
+              ]
+            },
+            {
+              "And": [
+                {
+                  "Variable": "$.rider.state",
+                  "StringEquals": "Working"
+                },
+                {
+                  "Variable": "$.input.next_state",
+                  "StringEquals": "Not Working"
+                }
+              ]
+            }
+          ],
+          "Next": "Transition rider to next state"
+        },
+        {
+          "And": [
+            {
+              "Variable": "$.rider.state",
+              "StringEquals": "Starting"
+            },
+            {
+              "Variable": "$.input.next_state",
+              "StringEquals": "Working"
+            }
+          ],
+          "Next": "Validate start point and device token"
+        }
+      ],
+      "Default": "Send event to DLQ for manual handling"
+    },
+    "Transition rider to next state": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::dynamodb:updateItem",
+      "Parameters": {
+        "TableName": "RiderStates-CDK",
+        "Key": {
+          "Area#Entity": {
+            "S.$": "$.input.rider_id"
+          }
+        },
+        "UpdateExpression": "SET #state = :nextState",
+        "ExpressionAttributeNames": {
+          "#state": "State"
+        },
+        "ExpressionAttributeValues": {
+          ":nextState": {
+            "S.$": "$.input.next_state"
+          }
+        }
+      },
+      "Next": "Emit rider state change event",
+      "ResultSelector": {
+        "status_code.$": "$.SdkHttpMetadata.HttpStatusCode"
+      },
+      "ResultPath": "$.ddb",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "BackoffRate": 1.5,
+          "IntervalSeconds": 1,
+          "MaxAttempts": 5,
+          "Comment": "Retry all errors"
+        }
+      ]
+    },
+    "Emit rider state change event": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "Message.$": "$",
+        "TopicArn": "arn:aws:sns:us-east-1:690431608027:RiderStateChangeEvent-CDK"
+      },
+      "End": true,
+      "ResultSelector": {
+        "status_code.$": "$.SdkHttpMetadata.HttpStatusCode"
+      },
+      "ResultPath": "$.sns",
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "BackoffRate": 2,
+          "IntervalSeconds": 1,
+          "MaxAttempts": 5
+        }
+      ]
+    },
+    "Fail": {
+      "Type": "Fail"
+    },
+    "Validate start point and device token": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "arn:aws:lambda:us-east-1:690431608027:function:RiderStateValidation-CDK:$LATEST"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException"
+          ],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 6,
+          "BackoffRate": 2
+        }
+      ],
+      "Next": "Transition rider to next state",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "Send event to DLQ for manual handling"
+        }
+      ],
+      "ResultPath": "$.validator",
+      "ResultSelector": {
+        "statusCode.$": "$.Payload.statusCode",
+        "valid.$": "$.Payload.valid"
+      }
+    }
+  }
+}
