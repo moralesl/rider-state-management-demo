@@ -1,5 +1,5 @@
 {
-  "app": "npx ts-node --prefer-ts-exts bin/state-management-demo.ts",
+  "app": "npx ts-node --prefer-ts-exts cdk/state-management-demo.ts",
   "watch": {
     "include": [
       "**"
