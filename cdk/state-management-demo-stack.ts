@@ -16,26 +16,6 @@ export class StateManagementDemoStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const riderStateValidationFunction = new lambda.Function(this, "RiderStateValidation-CDK", {
-      functionName: "RiderStateValidation-CDK",
-      runtime: lambda.Runtime.PYTHON_3_9,
-      architecture: lambda.Architecture.ARM_64,
-      handler: "app.handler",
-      code: lambda.Code.fromAsset(path.join(__dirname, "..", "rider-state-validation")),
-    });
-
-    const riderStateChangeEventTopic = new sns.Topic(this, "RiderStateChangeEvent-CDK", {
-      displayName: "RiderStateChangeEvent-CDK",
-      topicName: "RiderStateChangeEvent-CDK",
-    });
-
-    const riderStateDLQ = new sqs.Queue(this, "RiderStateDLQ-CDK", {
-      queueName: "RiderStateDLQ-CDK",
-      retentionPeriod: Duration.minutes(5),
-
-      removalPolicy: RemovalPolicy.DESTROY, // This is just for development purposes
-    });
-
     const riderStateTable = new dynamodb.Table(this, "RiderStateTable-CDK", {
       partitionKey: { name: "Area#Entity", type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
@@ -74,7 +54,13 @@ export class StateManagementDemoStack extends cdk.Stack {
 
     // 2. Validate starting point
     const validateStartPoint = new tasks.LambdaInvoke(this, "Validate start point and device token", {
-      lambdaFunction: riderStateValidationFunction,
+      lambdaFunction: new lambda.Function(this, "RiderStateValidation-CDK", {
+        functionName: "RiderStateValidation-CDK",
+        runtime: lambda.Runtime.PYTHON_3_9,
+        architecture: lambda.Architecture.ARM_64,
+        handler: "app.handler",
+        code: lambda.Code.fromAsset(path.join(__dirname, "..", "rider-state-validation")),
+      }),
       payload: sfn.TaskInput.fromJsonPathAt("$"),
       resultSelector: {
         "statusCode.$": "$.Payload.statusCode",
@@ -112,7 +98,10 @@ export class StateManagementDemoStack extends cdk.Stack {
 
     // 4. Emit rider state change information
     const emitRiderStateChangeEvent = new tasks.SnsPublish(this, "Emit rider state change event", {
-      topic: riderStateChangeEventTopic,
+      topic: new sns.Topic(this, "RiderStateChangeEvent-CDK", {
+        displayName: "RiderStateChangeEvent-CDK",
+        topicName: "RiderStateChangeEvent-CDK",
+      }),
       message: sfn.TaskInput.fromJsonPathAt("$"),
       resultSelector: {
         "status_code.$": "$.SdkHttpMetadata.HttpStatusCode",
@@ -126,7 +115,12 @@ export class StateManagementDemoStack extends cdk.Stack {
 
     // On error send event to DLQ
     const sendEventToDlqForManualHandling = new tasks.SqsSendMessage(this, "Send event to DLQ for manual handling", {
-      queue: riderStateDLQ,
+      queue: new sqs.Queue(this, "RiderStateDLQ-CDK", {
+        queueName: "RiderStateDLQ-CDK",
+        retentionPeriod: Duration.minutes(5),
+
+        removalPolicy: RemovalPolicy.DESTROY, // This is just for development purposes
+      }),
       messageBody: sfn.TaskInput.fromJsonPathAt("$"),
     })
       .addRetry({
