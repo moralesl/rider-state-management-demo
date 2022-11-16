@@ -52,7 +52,7 @@ export class StateManagementDemoStack extends cdk.Stack {
       projectionType: dynamodb.ProjectionType.ALL,
     });
 
-    // Get current rider state informations
+    // 1. Get current rider state informations
     const getCurrentRiderStateInformation = new tasks.DynamoGetItem(this, "Get current rider state", {
       table: riderStateTable,
       key: {
@@ -72,7 +72,7 @@ export class StateManagementDemoStack extends cdk.Stack {
       backoffRate: 1.5,
     });
 
-    // TODO catch is missing
+    // 2. Validate starting point
     const validateStartPoint = new tasks.LambdaInvoke(this, "Validate start point and device token", {
       lambdaFunction: riderStateValidationFunction,
       payload: sfn.TaskInput.fromJsonPathAt("$"),
@@ -87,7 +87,7 @@ export class StateManagementDemoStack extends cdk.Stack {
       backoffRate: 1.5,
     });
 
-    // Transition rider to next state & persist it
+    // 3. Transition rider to next state & persist it
     const transitionRiderToNextStateAndPersistIt = new tasks.DynamoUpdateItem(this, "Transition rider to next state", {
       table: riderStateTable,
       key: {
@@ -110,7 +110,7 @@ export class StateManagementDemoStack extends cdk.Stack {
       backoffRate: 1.5,
     });
 
-    // Emit rider state change information
+    // 4. Emit rider state change information
     const emitRiderStateChangeEvent = new tasks.SnsPublish(this, "Emit rider state change event", {
       topic: riderStateChangeEventTopic,
       message: sfn.TaskInput.fromJsonPathAt("$"),
