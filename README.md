@@ -1,6 +1,6 @@
 # Rider State Management Demo
 
-This repository contains different examples how you can manage state with the AWS serverless services, especially how you could use [Step Functions](https://aws.amazon.com/step-functions/) to do the state management and how to do this with the [AWS Cloud Development Kit (CDK)](https://aws.amazon.com/de/cdk/).
+This repository contains different examples how you can manage state with the AWS serverless services, especially how you could use [Step Functions](https://aws.amazon.com/step-functions/) to do state management and how to do this with the [AWS Cloud Development Kit (CDK)](https://aws.amazon.com/de/cdk/).
 
 ## Table of content
 - [Overview](#overview)
@@ -18,7 +18,7 @@ This repository contains different examples how you can manage state with the AW
 
 ## Overview
 
-Imagine you want to manage a rider fleet for deliverance. You would have to track the current state of riders, but also manage the state transitions, to only allow valid state transitions. Also you to let now your subscribers of state changes, so that you can pay riders accordingly.
+Imagine you want to manage a rider fleet for deliverance. You would have to track the current state of riders, but also manage the state transitions to only allow valid state transitions. Also you to let now your subscribers of state changes, so that you can e.g. pay riders accordingly.
 
 ![Rider State Changes - Overview](img/Overview.png)
 
@@ -123,46 +123,39 @@ npm install
 
 ### Initial deployment
 ```bash
-cdk deploy StateManagementASLDemoStack
 cdk deploy StateManagementDemoStack
+```
+
+To deploy the ASL stack, you first have to change the region and the account id in your asl.json, e.g. `https://sqs.us-east-1.amazonaws.com/123456789012/RiderStateDLQ-ASL-CDK`.
+
+Afterwards you can deploy it:
+
+```bash
+cdk deploy StateManagementASLDemoStack
 ```
 
 ### Pre-populate rider state
 ```bash
 aws dynamodb put-item \
     --table-name=RiderStateTable-CDK \
-    --item='{ "Area#Entity": { "S": "Munich#RIDER#1" }, "Lat": { "N": "44" }, "Long": { "N": "12" }, "State": { "S": "Not Working" }, "Timestamp": { "N": "-1" } }'
+    --item='{ "Area#Entity": { "S": "Munich#RIDER#1" }, "Lat": { "N": "48.13743" }, "Long": { "N": "11.57549" }, "State": { "S": "Not Working" }, "Timestamp": { "N": "-1" } }'
 
 aws dynamodb put-item \
     --table-name=RiderStateTable-ASL-CDK \
-    --item='{ "Area#Entity": { "S": "Munich#RIDER#1" }, "Lat": { "N": "44" }, "Long": { "N": "12" }, "State": { "S": "Not Working" }, "Timestamp": { "N": "-1" } }'
+    --item='{ "Area#Entity": { "S": "Munich#RIDER#1" }, "Lat": { "N": "48.13743" }, "Long": { "N": "11.57549" }, "State": { "S": "Not Working" }, "Timestamp": { "N": "-1" } }'
 ```
 
 ### Execute rider state change request
 
-In order to start the state machine, execute:
-```bash
-aws stepfunctions start-execution \
-    --name=cli-test-run \
-    --state-machine-arn=STATE_MACHINE_ARN \
-    --input='{ "input": { "rider_id": "Munich#RIDER#1", "next_state": "Available" } }'
-```
+In order to start the state machine, go to the Step Functions console, select your Step Function and start a execution with this parameters:
 
-You can use the resulting state machine ARN that is included in the CDK output.
-
-The result contains the execution ARN, that is needed to request the output, e.g:
-```bash
+```json
 {
-    "executionArn": "STATE_MACHINE_ARN:cli-test-run",
-    "startDate": "2021-12-01T13:37:00.000000+00:00"
+    "input": {
+        "rider_id": "Munich#RIDER#1",
+        "next_state": "Available"
+    }
 }
-```
-
-To see the output of the state machine execution, execute this:
-```bash
-aws stepfunctions describe-execution \
-    --execution-arn=STATE_MACHINE_ARN:cli-test-run \
-    --query="output" | jq -r  '. | fromjson'
 ```
 
 This will result in:
@@ -175,8 +168,8 @@ This will result in:
   "rider": {
     "state": "Not Working",
     "rider_id": "Munich#RIDER#1",
-    "lat": "44",
-    "long": "12",
+    "lat": "48.13743",
+    "long": "11.57549",
     "timestamp": "-1"
   },
   "ddb": {
