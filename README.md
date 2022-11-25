@@ -1,14 +1,199 @@
-# Welcome to your CDK TypeScript project
+# Rider State Management Demo
 
-This is a blank project for CDK development with TypeScript.
+This repository contains different examples how you can manage state with the AWS serverless services, especially how you could use [Step Functions](https://aws.amazon.com/step-functions/) to do the state management and how to do this with the [AWS Cloud Development Kit (CDK)](https://aws.amazon.com/de/cdk/).
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+## Table of content
+- [Overview](#overview)
+- [Step Functions Implementations](#step-functions-implementations)
+  * [ASL integration](#asl-integration)
+  * [CDK Implementation](#cdk-implementation)
+- [Usage](#usage)
+  * [Bootstrap your environment](#bootstrap-your-environment)
+  * [Install dependencies](#install-dependencies)
+  * [Initial deployment](#initial-deployment)
+  * [Pre-populate Rider State](#pre-populate-rider-state)
+  * [Execute rider state change request](#execute-rider-state-change-request)
+  * [Destroy the stacks](#destroy-the-stacks)
+- [License](#license)
 
-## Useful commands
+## Overview
 
-* `npm run build`   compile typescript to js
-* `npm run watch`   watch for changes and compile
-* `npm run test`    perform the jest unit tests
-* `cdk deploy`      deploy this stack to your default AWS account/region
-* `cdk diff`        compare deployed stack with current state
-* `cdk synth`       emits the synthesized CloudFormation template
+Imagine you want to manage a rider fleet for deliverance. You would have to track the current state of riders, but also manage the state transitions, to only allow valid state transitions. Also you to let now your subscribers of state changes, so that you can pay riders accordingly.
+
+![Rider State Changes - Overview](img/Overview.png)
+
+These rider state changes can be represented by the following state machine.
+
+![Rider State Machine](img/StateMachine.png)
+
+The example application demonstrates a basic state management scenario, which consists of several steps:
+1. A rider submits a state change request (e.g. I'm available)
+2. The workflow validates the input
+3. The workflow fetch the current rider state data from DynamoDB
+4. The workflow validates if the transition is possible
+5. The workflow transition the rider to the next state and persist it
+6. The workflow emits rider state change information to subscribers
+
+If there is a persistent error, you can send the event to a Dead Letter Queue (DLQ), for further investigation.
+
+![Rider State Transition Workflow](img/StateTransitionWorkflow.png)
+
+
+
+## Step Functions Implementations
+### ASL integration
+
+[This version](cdk/state-management-demo-asl-stack.ts) uses the exported [Amazon State Language (ASL)](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-amazon-states-language.html) from the [AWS Step Functions Workflow Studio](https://docs.aws.amazon.com/step-functions/latest/dg/workflow-studio.html). This is directly importet into the CDK:
+```typescript
+const riderStateTransitionManagementStateMachine = new sfn.StateMachine(this, "RiderStateTransitionManagement-ASL-CDK", {
+        definition: new sfn.Pass(this, "StartState"),
+        // ...
+    }
+);
+
+const cfnStatemachine = riderStateTransitionManagementStateMachine.node.defaultChild as sfn.CfnStateMachine;
+
+const stateMachineDefinition = JSON.parse(fs.readFileSync("rider-state-management.asl.json", "utf8"));
+cfnStatemachine.definitionString = JSON.stringify(stateMachineDefinition);
+```
+
+### CDK Implementation
+[This version](cdk/state-management-demo-stack.ts) uses the Step Function CDK modules. This is directly implemented in CDK:
+```typescript
+// Set up the necessary resources [...]
+
+const riderStateTransitionManagementStateMachineDefinition = new Choice(this, "Is rider id and next state valid?")
+    .when(
+    // Check if input is valid
+    Condition.and(
+        ...allArePresent("$.input.rider_id", "$.input.next_state"),
+        anyStringMatches("$.input.next_state", "Not Working", "Available", "Starting", "Working")
+    ),
+    // Get current rider state information
+    getCurrentRiderStateInformation.next(
+        new Choice(this, "Is next state a valid transition?")
+        .when(
+            // If it transitions from starting to working...
+            isValidStateTransition({
+                currentStateVariable: "$.rider.state",
+                nextStateVariable: "$.input.next_state",
+                validTransitions: [["Starting", "Working"]],
+            }),
+            // Validate the start point and transition the rider to the next state
+            validateStartPoint.next(transitionRiderToNextStateAndPersistIt)
+        )
+        .when(
+            // If is another valid transition...
+            isValidStateTransition({
+                currentStateVariable: "$.rider.state",
+                nextStateVariable: "$.input.next_state",
+                validTransitions: [
+                    ["Not Working", "Available"],
+                    ["Not Working", "Starting"],
+                    ["Available", "Not Working"],
+                    ["Available", "Starting"],
+                    ["Starting", "Not Working"],
+                    ["Working", "Not Working"],
+                ],
+            }),
+            // Transition the rider to the next state and emit change event
+            transitionRiderToNextStateAndPersistIt.next(emitRiderStateChangeEvent)
+        )
+        // Otherwise send event to DLQ
+        .otherwise(sendEventToDlqForManualHandling)
+    )
+    )
+    // Otherwise send event to DLQ
+    .otherwise(sendEventToDlqForManualHandling);
+```
+
+
+## Usage
+### Bootstrap your environment
+```bash
+cdk bootstrap aws://ACCOUNT-NUMBER/REGION       # e.g. cdk bootstrap aws://123456789012/us-east-1
+```
+
+For more details, see [AWS CDK Bootstrapping](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html).
+
+### Install dependencies
+```bash
+npm install
+```
+
+### Initial deployment
+```bash
+cdk deploy StateManagementASLDemoStack
+cdk deploy StateManagementDemoStack
+```
+
+### Pre-populate rider state
+```bash
+aws dynamodb put-item \
+    --table-name=RiderStateTable-CDK \
+    --item='{ "Area#Entity": { "S": "Munich#RIDER#1" }, "Lat": { "N": "44" }, "Long": { "N": "12" }, "State": { "S": "Not Working" }, "Timestamp": { "N": "-1" } }'
+
+aws dynamodb put-item \
+    --table-name=RiderStateTable-ASL-CDK \
+    --item='{ "Area#Entity": { "S": "Munich#RIDER#1" }, "Lat": { "N": "44" }, "Long": { "N": "12" }, "State": { "S": "Not Working" }, "Timestamp": { "N": "-1" } }'
+```
+
+### Execute rider state change request
+
+In order to start the state machine, execute:
+```bash
+aws stepfunctions start-execution \
+    --name=cli-test-run \
+    --state-machine-arn=STATE_MACHINE_ARN \
+    --input='{ "input": { "rider_id": "Munich#RIDER#1", "next_state": "Available" } }'
+```
+
+You can use the resulting state machine ARN that is included in the CDK output.
+
+The result contains the execution ARN, that is needed to request the output, e.g:
+```bash
+{
+    "executionArn": "STATE_MACHINE_ARN:cli-test-run",
+    "startDate": "2021-12-01T13:37:00.000000+00:00"
+}
+```
+
+To see the output of the state machine execution, execute this:
+```bash
+aws stepfunctions describe-execution \
+    --execution-arn=STATE_MACHINE_ARN:cli-test-run \
+    --query="output" | jq -r  '. | fromjson'
+```
+
+This will result in:
+```
+{
+  "input": {
+    "rider_id": "Munich#RIDER#1",
+    "next_state": "Available"
+  },
+  "rider": {
+    "state": "Not Working",
+    "rider_id": "Munich#RIDER#1",
+    "lat": "44",
+    "long": "12",
+    "timestamp": "-1"
+  },
+  "ddb": {
+    "status_code": 200
+  },
+  "sns": {
+    "status_code": 200
+  }
+}
+```
+
+
+### Destroy the stacks
+```bash
+cdk destroy --all
+```
+
+## License
+
+This project is licensed under the Apache-2.0 License.
