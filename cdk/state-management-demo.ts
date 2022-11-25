@@ -7,14 +7,14 @@ import { Tags } from 'aws-cdk-lib';
 
 const app = new cdk.App();
 const stateManagementASLDemoStack = new StateManagementASLDemoStack(app, 'StateManagementASLDemoStack', {
-  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: 'us-east-1'},
+  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
 });
 
 Tags.of(stateManagementASLDemoStack).add('Project', 'StateManagementASLDemo')
 
 
 const stateManagementDemoStack = new StateManagementDemoStack(app, 'StateManagementDemoStack', {
-  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: 'us-east-1'},
+  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
 });
 
 Tags.of(stateManagementDemoStack).add('Project', 'StateManagementDemo')
