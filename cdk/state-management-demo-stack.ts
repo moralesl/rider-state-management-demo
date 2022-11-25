@@ -132,21 +132,26 @@ export class StateManagementDemoStack extends cdk.Stack {
 
     const riderStateTransitionManagementStateMachineDefinition = new Choice(this, "Is rider id and next state valid?")
       .when(
+        // Check if input is valid
         Condition.and(
           ...allArePresent("$.input.rider_id", "$.input.next_state"),
           anyStringMatches("$.input.next_state", "Not Working", "Available", "Starting", "Working")
         ),
+        // Get current rider state information
         getCurrentRiderStateInformation.next(
           new Choice(this, "Is next state a valid transition?")
             .when(
+              // If it transitions from starting to working...
               isValidStateTransition({
                 currentStateVariable: "$.rider.state",
                 nextStateVariable: "$.input.next_state",
                 validTransitions: [["Starting", "Working"]],
               }),
+              // Validate the start point and transition the rider to the next state
               validateStartPoint.next(transitionRiderToNextStateAndPersistIt)
             )
             .when(
+              // If it is another valid transition...
               isValidStateTransition({
                 currentStateVariable: "$.rider.state",
                 nextStateVariable: "$.input.next_state",
@@ -159,11 +164,14 @@ export class StateManagementDemoStack extends cdk.Stack {
                   ["Working", "Not Working"],
                 ],
               }),
+              // Transition the rider to the next state and emit change event
               transitionRiderToNextStateAndPersistIt.next(emitRiderStateChangeEvent)
             )
+            // Otherwise send event to DLQ
             .otherwise(sendEventToDlqForManualHandling)
         )
       )
+      // Otherwise send event to DLQ
       .otherwise(sendEventToDlqForManualHandling);
 
     const riderStateTransitionManagementStateMachine = new sfn.StateMachine(
