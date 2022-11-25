@@ -46,7 +46,7 @@
       "Resource": "arn:aws:states:::sqs:sendMessage",
       "Parameters": {
         "MessageBody.$": "$",
-        "QueueUrl": "https://sqs.us-east-1.amazonaws.com/690431608027/RiderStateDLQ-ASL-CDK"
+        "QueueUrl": "https://sqs.us-east-1.amazonaws.com/123456789012/RiderStateDLQ-ASL-CDK"
       },
       "Next": "Fail"
     },
@@ -209,7 +209,7 @@
       "Resource": "arn:aws:states:::sns:publish",
       "Parameters": {
         "Message.$": "$",
-        "TopicArn": "arn:aws:sns:us-east-1:690431608027:RiderStateChangeEvent-ASL-CDK"
+        "TopicArn": "arn:aws:sns:us-east-1:123456789012:RiderStateChangeEvent-ASL-CDK"
       },
       "End": true,
       "ResultSelector": {
@@ -235,7 +235,7 @@
       "Resource": "arn:aws:states:::lambda:invoke",
       "Parameters": {
         "Payload.$": "$",
-        "FunctionName": "arn:aws:lambda:us-east-1:690431608027:function:RiderStateValidation-ASL-CDK:$LATEST"
+        "FunctionName": "arn:aws:lambda:us-east-1:123456789012:function:RiderStateValidation-ASL-CDK:$LATEST"
       },
       "Retry": [
         {
