@@ -9,7 +9,7 @@ import * as logs from "aws-cdk-lib/aws-logs";
 import * as sfn from "aws-cdk-lib/aws-stepfunctions";
 import * as sns from "aws-cdk-lib/aws-sns";
 import * as sqs from "aws-cdk-lib/aws-sqs";
-import { Duration, RemovalPolicy } from "aws-cdk-lib";
+import { CfnOutput, Duration, RemovalPolicy } from "aws-cdk-lib";
 
 export class StateManagementASLDemoStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -76,5 +76,9 @@ export class StateManagementASLDemoStack extends cdk.Stack {
     riderStateChangeEvent.grantPublish(riderStateTransitionManagementStateMachine);
     riderStateDLQ.grantSendMessages(riderStateTransitionManagementStateMachine);
     riderStateTable.grantReadWriteData(riderStateTransitionManagementStateMachine);
+
+    new CfnOutput(this, "RiderStateTransitionManagementStateMachine-ASL-Arn", {
+      value: riderStateTransitionManagementStateMachine.stateMachineArn,
+    });
   }
 }

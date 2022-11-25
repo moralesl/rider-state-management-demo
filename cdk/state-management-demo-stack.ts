@@ -10,7 +10,7 @@ import { Choice, Condition, JsonPath } from "aws-cdk-lib/aws-stepfunctions";
 import * as tasks from "aws-cdk-lib/aws-stepfunctions-tasks";
 import * as sns from "aws-cdk-lib/aws-sns";
 import * as sqs from "aws-cdk-lib/aws-sqs";
-import { Duration, RemovalPolicy } from "aws-cdk-lib";
+import { CfnOutput, Duration, RemovalPolicy } from "aws-cdk-lib";
 
 export class StateManagementDemoStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -183,6 +183,10 @@ export class StateManagementDemoStack extends cdk.Stack {
     );
 
     riderStateTable.grantReadWriteData(riderStateTransitionManagementStateMachine);
+
+    new CfnOutput(this, "RiderStateTransitionManagementStateMachine-Arn", {
+      value: riderStateTransitionManagementStateMachine.stateMachineArn,
+    });
   }
 }
 
