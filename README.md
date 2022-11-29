@@ -18,7 +18,7 @@ This repository contains different examples how you can manage state with the AW
 
 ## Overview
 
-Imagine you want to manage a rider fleet for deliverance. You would have to track the current state of riders, but also manage the state transitions to only allow valid state transitions. Also you to let now your subscribers of state changes, so that you can e.g. pay riders accordingly.
+Imagine you want to manage a fleet of unicorns for your [Wild Rydes](http://www.wildrydes.com/) business. You want to track the current state of riders and manage the state transitions to only allow valid state transitions. Also you want to let your subscribers know of state changes, so that you can e.g. pay riders accordingly.
 
 ![Rider State Changes - Overview](img/Overview.png)
 
