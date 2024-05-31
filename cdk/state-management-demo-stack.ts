@@ -56,7 +56,7 @@ export class StateManagementDemoStack extends cdk.Stack {
     const validateStartPoint = new tasks.LambdaInvoke(this, "Validate start point and device token", {
       lambdaFunction: new lambda.Function(this, "RiderStateValidation-CDK", {
         functionName: "RiderStateValidation-CDK",
-        runtime: lambda.Runtime.PYTHON_3_9,
+        runtime: lambda.Runtime.PYTHON_3_12,
         architecture: lambda.Architecture.ARM_64,
         handler: "app.handler",
         code: lambda.Code.fromAsset(path.join(__dirname, "..", "rider-state-validation")),
