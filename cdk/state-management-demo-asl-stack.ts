@@ -1,4 +1,3 @@
-import * as fs from "fs";
 import * as path from "path";
 
 import * as cdk from "aws-cdk-lib";
@@ -17,7 +16,7 @@ export class StateManagementASLDemoStack extends cdk.Stack {
 
     const riderStateValidation = new lambda.Function(this, "RiderStateValidation-ASL-CDK", {
       functionName: "RiderStateValidation-ASL-CDK",
-      runtime: lambda.Runtime.PYTHON_3_9,
+      runtime: lambda.Runtime.PYTHON_3_12,
       architecture: lambda.Architecture.ARM_64,
       handler: "app.handler",
       code: lambda.Code.fromAsset(path.join(__dirname, "..", "rider-state-validation")),
@@ -56,6 +55,13 @@ export class StateManagementASLDemoStack extends cdk.Stack {
       "RiderStateTransitionManagement-ASL-CDK",
       {
         definitionBody: sfn.DefinitionBody.fromFile("rider-state-management.asl.json"),
+        definitionSubstitutions: {
+          QUEUE_URL: riderStateDLQ.queueUrl,
+          TABLE_NAME: riderStateTable.tableName,
+          TOPIC_ARN: riderStateChangeEvent.topicArn,
+          FUNCTION_ARN: riderStateValidation.functionArn
+        },
+
         stateMachineName: "RiderStateTransitionManagement-ASL-CDK",
         stateMachineType: sfn.StateMachineType.EXPRESS,
         tracingEnabled: true,

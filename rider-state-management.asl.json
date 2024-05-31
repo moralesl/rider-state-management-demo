@@ -46,7 +46,7 @@
       "Resource": "arn:aws:states:::sqs:sendMessage",
       "Parameters": {
         "MessageBody.$": "$",
-        "QueueUrl": "https://sqs.us-east-1.amazonaws.com/123456789012/RiderStateDLQ-ASL-CDK"
+        "QueueUrl": "${QUEUE_URL}"
       },
       "Next": "Fail"
     },
@@ -54,7 +54,7 @@
       "Type": "Task",
       "Resource": "arn:aws:states:::dynamodb:getItem",
       "Parameters": {
-        "TableName": "RiderStateTable-ASL-CDK",
+        "TableName": "${TABLE_NAME}",
         "Key": {
           "Area#Entity": {
             "S.$": "$.input.rider_id"
@@ -171,7 +171,7 @@
       "Type": "Task",
       "Resource": "arn:aws:states:::dynamodb:updateItem",
       "Parameters": {
-        "TableName": "RiderStateTable-ASL-CDK",
+        "TableName": "${TABLE_NAME}",
         "Key": {
           "Area#Entity": {
             "S.$": "$.input.rider_id"
@@ -209,7 +209,7 @@
       "Resource": "arn:aws:states:::sns:publish",
       "Parameters": {
         "Message.$": "$",
-        "TopicArn": "arn:aws:sns:us-east-1:123456789012:RiderStateChangeEvent-ASL-CDK"
+        "TopicArn": "${TOPIC_ARN}"
       },
       "End": true,
       "ResultSelector": {
@@ -235,7 +235,7 @@
       "Resource": "arn:aws:states:::lambda:invoke",
       "Parameters": {
         "Payload.$": "$",
-        "FunctionName": "arn:aws:lambda:us-east-1:123456789012:function:RiderStateValidation-ASL-CDK:$LATEST"
+        "FunctionName": "${FUNCTION_ARN}"
       },
       "Retry": [
         {
