@@ -1,0 +1,477 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ASL Demo match Snapshot 1`] = `
+Object {
+  "Mappings": Object {
+    "ServiceprincipalMap": Object {
+      "af-south-1": Object {
+        "states": "states.af-south-1.amazonaws.com",
+      },
+      "ap-east-1": Object {
+        "states": "states.ap-east-1.amazonaws.com",
+      },
+      "ap-northeast-1": Object {
+        "states": "states.ap-northeast-1.amazonaws.com",
+      },
+      "ap-northeast-2": Object {
+        "states": "states.ap-northeast-2.amazonaws.com",
+      },
+      "ap-northeast-3": Object {
+        "states": "states.ap-northeast-3.amazonaws.com",
+      },
+      "ap-south-1": Object {
+        "states": "states.ap-south-1.amazonaws.com",
+      },
+      "ap-south-2": Object {
+        "states": "states.ap-south-2.amazonaws.com",
+      },
+      "ap-southeast-1": Object {
+        "states": "states.ap-southeast-1.amazonaws.com",
+      },
+      "ap-southeast-2": Object {
+        "states": "states.ap-southeast-2.amazonaws.com",
+      },
+      "ap-southeast-3": Object {
+        "states": "states.ap-southeast-3.amazonaws.com",
+      },
+      "ap-southeast-4": Object {
+        "states": "states.ap-southeast-4.amazonaws.com",
+      },
+      "ca-central-1": Object {
+        "states": "states.ca-central-1.amazonaws.com",
+      },
+      "cn-north-1": Object {
+        "states": "states.cn-north-1.amazonaws.com",
+      },
+      "cn-northwest-1": Object {
+        "states": "states.cn-northwest-1.amazonaws.com",
+      },
+      "eu-central-1": Object {
+        "states": "states.eu-central-1.amazonaws.com",
+      },
+      "eu-central-2": Object {
+        "states": "states.eu-central-2.amazonaws.com",
+      },
+      "eu-north-1": Object {
+        "states": "states.eu-north-1.amazonaws.com",
+      },
+      "eu-south-1": Object {
+        "states": "states.eu-south-1.amazonaws.com",
+      },
+      "eu-south-2": Object {
+        "states": "states.eu-south-2.amazonaws.com",
+      },
+      "eu-west-1": Object {
+        "states": "states.eu-west-1.amazonaws.com",
+      },
+      "eu-west-2": Object {
+        "states": "states.eu-west-2.amazonaws.com",
+      },
+      "eu-west-3": Object {
+        "states": "states.eu-west-3.amazonaws.com",
+      },
+      "il-central-1": Object {
+        "states": "states.il-central-1.amazonaws.com",
+      },
+      "me-central-1": Object {
+        "states": "states.me-central-1.amazonaws.com",
+      },
+      "me-south-1": Object {
+        "states": "states.me-south-1.amazonaws.com",
+      },
+      "sa-east-1": Object {
+        "states": "states.sa-east-1.amazonaws.com",
+      },
+      "us-east-1": Object {
+        "states": "states.us-east-1.amazonaws.com",
+      },
+      "us-east-2": Object {
+        "states": "states.us-east-2.amazonaws.com",
+      },
+      "us-gov-east-1": Object {
+        "states": "states.us-gov-east-1.amazonaws.com",
+      },
+      "us-gov-west-1": Object {
+        "states": "states.us-gov-west-1.amazonaws.com",
+      },
+      "us-iso-east-1": Object {
+        "states": "states.amazonaws.com",
+      },
+      "us-iso-west-1": Object {
+        "states": "states.amazonaws.com",
+      },
+      "us-isob-east-1": Object {
+        "states": "states.amazonaws.com",
+      },
+      "us-west-1": Object {
+        "states": "states.us-west-1.amazonaws.com",
+      },
+      "us-west-2": Object {
+        "states": "states.us-west-2.amazonaws.com",
+      },
+    },
+  },
+  "Outputs": Object {
+    "RiderStateTransitionManagementStateMachineASLArn": Object {
+      "Value": Object {
+        "Ref": "RiderStateTransitionManagementASLCDK137D569C",
+      },
+    },
+  },
+  "Parameters": Object {
+    "BootstrapVersion": Object {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": Object {
+    "RiderStateChangeEventASLCDK464CBE26": Object {
+      "Properties": Object {
+        "DisplayName": "RiderStateChangeEvent-ASL-CDK",
+        "TopicName": "RiderStateChangeEvent-ASL-CDK",
+      },
+      "Type": "AWS::SNS::Topic",
+    },
+    "RiderStateDLQASLCDKB605F866": Object {
+      "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "MessageRetentionPeriod": 300,
+        "QueueName": "RiderStateDLQ-ASL-CDK",
+      },
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "RiderStateTableASLCDK34375312": Object {
+      "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "AttributeDefinitions": Array [
+          Object {
+            "AttributeName": "Area#Entity",
+            "AttributeType": "S",
+          },
+          Object {
+            "AttributeName": "State",
+            "AttributeType": "S",
+          },
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "GlobalSecondaryIndexes": Array [
+          Object {
+            "IndexName": "State",
+            "KeySchema": Array [
+              Object {
+                "AttributeName": "State",
+                "KeyType": "HASH",
+              },
+              Object {
+                "AttributeName": "Area#Entity",
+                "KeyType": "RANGE",
+              },
+            ],
+            "Projection": Object {
+              "ProjectionType": "ALL",
+            },
+          },
+        ],
+        "KeySchema": Array [
+          Object {
+            "AttributeName": "Area#Entity",
+            "KeyType": "HASH",
+          },
+        ],
+        "TableName": "RiderStateTable-ASL-CDK",
+      },
+      "Type": "AWS::DynamoDB::Table",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "RiderStateTransitionManagementASLCDK137D569C": Object {
+      "DeletionPolicy": "Delete",
+      "DependsOn": Array [
+        "RiderStateTransitionManagementASLCDKRoleDefaultPolicyF78997AA",
+        "RiderStateTransitionManagementASLCDKRole37A1FC67",
+      ],
+      "Properties": Object {
+        "DefinitionS3Location": Object {
+          "Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "Key": "d842334aea3ffd1b5252dc2f22d62d7eb4f7c68cfd8d74451edf4f5b06d2f585.json",
+        },
+        "LoggingConfiguration": Object {
+          "Destinations": Array [
+            Object {
+              "CloudWatchLogsLogGroup": Object {
+                "LogGroupArn": Object {
+                  "Fn::GetAtt": Array [
+                    "RiderStateTransitionManagementASLCDKLogGroupA25010EE",
+                    "Arn",
+                  ],
+                },
+              },
+            },
+          ],
+          "IncludeExecutionData": true,
+          "Level": "ALL",
+        },
+        "RoleArn": Object {
+          "Fn::GetAtt": Array [
+            "RiderStateTransitionManagementASLCDKRole37A1FC67",
+            "Arn",
+          ],
+        },
+        "StateMachineName": "RiderStateTransitionManagement-ASL-CDK",
+        "StateMachineType": "EXPRESS",
+        "TracingConfiguration": Object {
+          "Enabled": true,
+        },
+      },
+      "Type": "AWS::StepFunctions::StateMachine",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "RiderStateTransitionManagementASLCDKLogGroupA25010EE": Object {
+      "DeletionPolicy": "Retain",
+      "Properties": Object {
+        "RetentionInDays": 731,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "RiderStateTransitionManagementASLCDKRole37A1FC67": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": Object {
+                  "Fn::FindInMap": Array [
+                    "ServiceprincipalMap",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    "states",
+                  ],
+                },
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "RiderStateTransitionManagementASLCDKRoleDefaultPolicyF78997AA": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "logs:CreateLogDelivery",
+                "logs:GetLogDelivery",
+                "logs:UpdateLogDelivery",
+                "logs:DeleteLogDelivery",
+                "logs:ListLogDeliveries",
+                "logs:PutResourcePolicy",
+                "logs:DescribeResourcePolicies",
+                "logs:DescribeLogGroups",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+                "xray:GetSamplingRules",
+                "xray:GetSamplingTargets",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "RiderStateValidationASLCDK21EFCC6C",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "RiderStateValidationASLCDK21EFCC6C",
+                          "Arn",
+                        ],
+                      },
+                      ":*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            Object {
+              "Action": "sns:Publish",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Ref": "RiderStateChangeEventASLCDK464CBE26",
+              },
+            },
+            Object {
+              "Action": Array [
+                "sqs:SendMessage",
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "RiderStateDLQASLCDKB605F866",
+                  "Arn",
+                ],
+              },
+            },
+            Object {
+              "Action": Array [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "RiderStateTableASLCDK34375312",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "RiderStateTableASLCDK34375312",
+                          "Arn",
+                        ],
+                      },
+                      "/index/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "RiderStateTransitionManagementASLCDKRoleDefaultPolicyF78997AA",
+        "Roles": Array [
+          Object {
+            "Ref": "RiderStateTransitionManagementASLCDKRole37A1FC67",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "RiderStateValidationASLCDK21EFCC6C": Object {
+      "DependsOn": Array [
+        "RiderStateValidationASLCDKServiceRoleC9BA78D9",
+      ],
+      "Properties": Object {
+        "Architectures": Array [
+          "arm64",
+        ],
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "7751bbd3241187cb72efbcbc46253e7f24e94542772c8348f6ef4f0008688485.zip",
+        },
+        "FunctionName": "RiderStateValidation-ASL-CDK",
+        "Handler": "app.handler",
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "RiderStateValidationASLCDKServiceRoleC9BA78D9",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.9",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "RiderStateValidationASLCDKServiceRoleC9BA78D9": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+  },
+  "Rules": Object {
+    "CheckBootstrapVersion": Object {
+      "Assertions": Array [
+        Object {
+          "Assert": Object {
+            "Fn::Not": Array [
+              Object {
+                "Fn::Contains": Array [
+                  Array [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  Object {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;
