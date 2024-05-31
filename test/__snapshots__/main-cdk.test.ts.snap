@@ -1,0 +1,572 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CDK Demo match Snapshot 1`] = `
+Object {
+  "Mappings": Object {
+    "ServiceprincipalMap": Object {
+      "af-south-1": Object {
+        "states": "states.af-south-1.amazonaws.com",
+      },
+      "ap-east-1": Object {
+        "states": "states.ap-east-1.amazonaws.com",
+      },
+      "ap-northeast-1": Object {
+        "states": "states.ap-northeast-1.amazonaws.com",
+      },
+      "ap-northeast-2": Object {
+        "states": "states.ap-northeast-2.amazonaws.com",
+      },
+      "ap-northeast-3": Object {
+        "states": "states.ap-northeast-3.amazonaws.com",
+      },
+      "ap-south-1": Object {
+        "states": "states.ap-south-1.amazonaws.com",
+      },
+      "ap-south-2": Object {
+        "states": "states.ap-south-2.amazonaws.com",
+      },
+      "ap-southeast-1": Object {
+        "states": "states.ap-southeast-1.amazonaws.com",
+      },
+      "ap-southeast-2": Object {
+        "states": "states.ap-southeast-2.amazonaws.com",
+      },
+      "ap-southeast-3": Object {
+        "states": "states.ap-southeast-3.amazonaws.com",
+      },
+      "ap-southeast-4": Object {
+        "states": "states.ap-southeast-4.amazonaws.com",
+      },
+      "ca-central-1": Object {
+        "states": "states.ca-central-1.amazonaws.com",
+      },
+      "cn-north-1": Object {
+        "states": "states.cn-north-1.amazonaws.com",
+      },
+      "cn-northwest-1": Object {
+        "states": "states.cn-northwest-1.amazonaws.com",
+      },
+      "eu-central-1": Object {
+        "states": "states.eu-central-1.amazonaws.com",
+      },
+      "eu-central-2": Object {
+        "states": "states.eu-central-2.amazonaws.com",
+      },
+      "eu-north-1": Object {
+        "states": "states.eu-north-1.amazonaws.com",
+      },
+      "eu-south-1": Object {
+        "states": "states.eu-south-1.amazonaws.com",
+      },
+      "eu-south-2": Object {
+        "states": "states.eu-south-2.amazonaws.com",
+      },
+      "eu-west-1": Object {
+        "states": "states.eu-west-1.amazonaws.com",
+      },
+      "eu-west-2": Object {
+        "states": "states.eu-west-2.amazonaws.com",
+      },
+      "eu-west-3": Object {
+        "states": "states.eu-west-3.amazonaws.com",
+      },
+      "il-central-1": Object {
+        "states": "states.il-central-1.amazonaws.com",
+      },
+      "me-central-1": Object {
+        "states": "states.me-central-1.amazonaws.com",
+      },
+      "me-south-1": Object {
+        "states": "states.me-south-1.amazonaws.com",
+      },
+      "sa-east-1": Object {
+        "states": "states.sa-east-1.amazonaws.com",
+      },
+      "us-east-1": Object {
+        "states": "states.us-east-1.amazonaws.com",
+      },
+      "us-east-2": Object {
+        "states": "states.us-east-2.amazonaws.com",
+      },
+      "us-gov-east-1": Object {
+        "states": "states.us-gov-east-1.amazonaws.com",
+      },
+      "us-gov-west-1": Object {
+        "states": "states.us-gov-west-1.amazonaws.com",
+      },
+      "us-iso-east-1": Object {
+        "states": "states.amazonaws.com",
+      },
+      "us-iso-west-1": Object {
+        "states": "states.amazonaws.com",
+      },
+      "us-isob-east-1": Object {
+        "states": "states.amazonaws.com",
+      },
+      "us-west-1": Object {
+        "states": "states.us-west-1.amazonaws.com",
+      },
+      "us-west-2": Object {
+        "states": "states.us-west-2.amazonaws.com",
+      },
+    },
+  },
+  "Outputs": Object {
+    "RiderStateTransitionManagementStateMachineArn": Object {
+      "Value": Object {
+        "Ref": "RiderStateTransitionManagementCDK4DCE5B3D",
+      },
+    },
+  },
+  "Parameters": Object {
+    "BootstrapVersion": Object {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": Object {
+    "RiderStateChangeEventCDKBCB6E71C": Object {
+      "Properties": Object {
+        "DisplayName": "RiderStateChangeEvent-CDK",
+        "TopicName": "RiderStateChangeEvent-CDK",
+      },
+      "Type": "AWS::SNS::Topic",
+    },
+    "RiderStateDLQCDK6A8B08DF": Object {
+      "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "MessageRetentionPeriod": 300,
+        "QueueName": "RiderStateDLQ-CDK",
+      },
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "RiderStateTableCDKE307B11A": Object {
+      "DeletionPolicy": "Delete",
+      "Properties": Object {
+        "AttributeDefinitions": Array [
+          Object {
+            "AttributeName": "Area#Entity",
+            "AttributeType": "S",
+          },
+          Object {
+            "AttributeName": "State",
+            "AttributeType": "S",
+          },
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "GlobalSecondaryIndexes": Array [
+          Object {
+            "IndexName": "State",
+            "KeySchema": Array [
+              Object {
+                "AttributeName": "State",
+                "KeyType": "HASH",
+              },
+              Object {
+                "AttributeName": "Area#Entity",
+                "KeyType": "RANGE",
+              },
+            ],
+            "Projection": Object {
+              "ProjectionType": "ALL",
+            },
+          },
+        ],
+        "KeySchema": Array [
+          Object {
+            "AttributeName": "Area#Entity",
+            "KeyType": "HASH",
+          },
+        ],
+        "TableName": "RiderStateTable-CDK",
+      },
+      "Type": "AWS::DynamoDB::Table",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "RiderStateTransitionManagementCDK4DCE5B3D": Object {
+      "DeletionPolicy": "Delete",
+      "DependsOn": Array [
+        "RiderStateTransitionManagementCDKRoleDefaultPolicyD82CF21F",
+        "RiderStateTransitionManagementCDKRole6573A004",
+      ],
+      "Properties": Object {
+        "DefinitionString": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              "{\\"StartAt\\":\\"Is rider id and next state valid?\\",\\"States\\":{\\"Is rider id and next state valid?\\":{\\"Type\\":\\"Choice\\",\\"Choices\\":[{\\"And\\":[{\\"Variable\\":\\"$.input.rider_id\\",\\"IsPresent\\":true},{\\"Variable\\":\\"$.input.next_state\\",\\"IsPresent\\":true},{\\"Or\\":[{\\"Variable\\":\\"$.input.next_state\\",\\"StringEquals\\":\\"Not Working\\"},{\\"Variable\\":\\"$.input.next_state\\",\\"StringEquals\\":\\"Available\\"},{\\"Variable\\":\\"$.input.next_state\\",\\"StringEquals\\":\\"Starting\\"},{\\"Variable\\":\\"$.input.next_state\\",\\"StringEquals\\":\\"Working\\"}]}],\\"Next\\":\\"Get current rider state\\"}],\\"Default\\":\\"Send event to DLQ for manual handling\\"},\\"Send event to DLQ for manual handling\\":{\\"Next\\":\\"State Transition Failed\\",\\"Retry\\":[{\\"ErrorEquals\\":[\\"States.ALL\\"],\\"IntervalSeconds\\":1,\\"MaxAttempts\\":5,\\"BackoffRate\\":1.5}],\\"Type\\":\\"Task\\",\\"Resource\\":\\"arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::sqs:sendMessage\\",\\"Parameters\\":{\\"QueueUrl\\":\\"",
+              Object {
+                "Ref": "RiderStateDLQCDK6A8B08DF",
+              },
+              "\\",\\"MessageBody.$\\":\\"$\\"}},\\"State Transition Failed\\":{\\"Type\\":\\"Fail\\"},\\"Get current rider state\\":{\\"Next\\":\\"Is next state a valid transition?\\",\\"Retry\\":[{\\"ErrorEquals\\":[\\"States.ALL\\"],\\"IntervalSeconds\\":1,\\"MaxAttempts\\":3,\\"BackoffRate\\":1.5}],\\"Type\\":\\"Task\\",\\"ResultPath\\":\\"$.rider\\",\\"ResultSelector\\":{\\"rider_id.$\\":\\"$.Item.Area#Entity.S\\",\\"timestamp.$\\":\\"$.Item.Timestamp.N\\",\\"state.$\\":\\"$.Item.State.S\\",\\"lat.$\\":\\"$.Item.Lat.N\\",\\"long.$\\":\\"$.Item.Long.N\\"},\\"Resource\\":\\"arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::dynamodb:getItem\\",\\"Parameters\\":{\\"Key\\":{\\"Area#Entity\\":{\\"S.$\\":\\"$.input.rider_id\\"}},\\"TableName\\":\\"",
+              Object {
+                "Ref": "RiderStateTableCDKE307B11A",
+              },
+              "\\",\\"ConsistentRead\\":false}},\\"Is next state a valid transition?\\":{\\"Type\\":\\"Choice\\",\\"Choices\\":[{\\"Or\\":[{\\"And\\":[{\\"Variable\\":\\"$.rider.state\\",\\"StringEquals\\":\\"Starting\\"},{\\"Variable\\":\\"$.input.next_state\\",\\"StringEquals\\":\\"Working\\"}]}],\\"Next\\":\\"Validate start point and device token\\"},{\\"Or\\":[{\\"And\\":[{\\"Variable\\":\\"$.rider.state\\",\\"StringEquals\\":\\"Not Working\\"},{\\"Variable\\":\\"$.input.next_state\\",\\"StringEquals\\":\\"Available\\"}]},{\\"And\\":[{\\"Variable\\":\\"$.rider.state\\",\\"StringEquals\\":\\"Not Working\\"},{\\"Variable\\":\\"$.input.next_state\\",\\"StringEquals\\":\\"Starting\\"}]},{\\"And\\":[{\\"Variable\\":\\"$.rider.state\\",\\"StringEquals\\":\\"Available\\"},{\\"Variable\\":\\"$.input.next_state\\",\\"StringEquals\\":\\"Not Working\\"}]},{\\"And\\":[{\\"Variable\\":\\"$.rider.state\\",\\"StringEquals\\":\\"Available\\"},{\\"Variable\\":\\"$.input.next_state\\",\\"StringEquals\\":\\"Starting\\"}]},{\\"And\\":[{\\"Variable\\":\\"$.rider.state\\",\\"StringEquals\\":\\"Starting\\"},{\\"Variable\\":\\"$.input.next_state\\",\\"StringEquals\\":\\"Not Working\\"}]},{\\"And\\":[{\\"Variable\\":\\"$.rider.state\\",\\"StringEquals\\":\\"Working\\"},{\\"Variable\\":\\"$.input.next_state\\",\\"StringEquals\\":\\"Not Working\\"}]}],\\"Next\\":\\"Transition rider to next state\\"}],\\"Default\\":\\"Send event to DLQ for manual handling\\"},\\"Validate start point and device token\\":{\\"Next\\":\\"Transition rider to next state\\",\\"Retry\\":[{\\"ErrorEquals\\":[\\"Lambda.ClientExecutionTimeoutException\\",\\"Lambda.ServiceException\\",\\"Lambda.AWSLambdaException\\",\\"Lambda.SdkClientException\\"],\\"IntervalSeconds\\":2,\\"MaxAttempts\\":6,\\"BackoffRate\\":2},{\\"ErrorEquals\\":[\\"States.ALL\\"],\\"IntervalSeconds\\":1,\\"MaxAttempts\\":5,\\"BackoffRate\\":1.5}],\\"Type\\":\\"Task\\",\\"ResultPath\\":\\"$.validator\\",\\"ResultSelector\\":{\\"statusCode.$\\":\\"$.Payload.statusCode\\",\\"valid.$\\":\\"$.Payload.valid\\"},\\"Resource\\":\\"arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::lambda:invoke\\",\\"Parameters\\":{\\"FunctionName\\":\\"",
+              Object {
+                "Fn::GetAtt": Array [
+                  "RiderStateValidationCDK1338B994",
+                  "Arn",
+                ],
+              },
+              "\\",\\"Payload.$\\":\\"$\\"}},\\"Transition rider to next state\\":{\\"Next\\":\\"Emit rider state change event\\",\\"Retry\\":[{\\"ErrorEquals\\":[\\"States.ALL\\"],\\"IntervalSeconds\\":1,\\"MaxAttempts\\":5,\\"BackoffRate\\":1.5}],\\"Type\\":\\"Task\\",\\"ResultPath\\":\\"$.ddb\\",\\"ResultSelector\\":{\\"status_code.$\\":\\"$.SdkHttpMetadata.HttpStatusCode\\"},\\"Resource\\":\\"arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::dynamodb:updateItem\\",\\"Parameters\\":{\\"Key\\":{\\"Area#Entity\\":{\\"S.$\\":\\"$.input.rider_id\\"}},\\"TableName\\":\\"",
+              Object {
+                "Ref": "RiderStateTableCDKE307B11A",
+              },
+              "\\",\\"ExpressionAttributeNames\\":{\\"#state\\":\\"State\\"},\\"ExpressionAttributeValues\\":{\\":nextState\\":{\\"S.$\\":\\"$.input.next_state\\"}},\\"UpdateExpression\\":\\"SET #state = :nextState\\"}},\\"Emit rider state change event\\":{\\"End\\":true,\\"Retry\\":[{\\"ErrorEquals\\":[\\"States.ALL\\"],\\"IntervalSeconds\\":1,\\"MaxAttempts\\":5,\\"BackoffRate\\":1.5}],\\"Type\\":\\"Task\\",\\"ResultPath\\":\\"$.sns\\",\\"ResultSelector\\":{\\"status_code.$\\":\\"$.SdkHttpMetadata.HttpStatusCode\\"},\\"Resource\\":\\"arn:",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              ":states:::sns:publish\\",\\"Parameters\\":{\\"TopicArn\\":\\"",
+              Object {
+                "Ref": "RiderStateChangeEventCDKBCB6E71C",
+              },
+              "\\",\\"Message.$\\":\\"$\\"}}}}",
+            ],
+          ],
+        },
+        "LoggingConfiguration": Object {
+          "Destinations": Array [
+            Object {
+              "CloudWatchLogsLogGroup": Object {
+                "LogGroupArn": Object {
+                  "Fn::GetAtt": Array [
+                    "RiderStateTransitionManagementCDKLogGroup7161A72D",
+                    "Arn",
+                  ],
+                },
+              },
+            },
+          ],
+          "IncludeExecutionData": true,
+          "Level": "ALL",
+        },
+        "RoleArn": Object {
+          "Fn::GetAtt": Array [
+            "RiderStateTransitionManagementCDKRole6573A004",
+            "Arn",
+          ],
+        },
+        "StateMachineName": "RiderStateTransitionManagement-CDK",
+        "StateMachineType": "EXPRESS",
+        "TracingConfiguration": Object {
+          "Enabled": true,
+        },
+      },
+      "Type": "AWS::StepFunctions::StateMachine",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "RiderStateTransitionManagementCDKLogGroup7161A72D": Object {
+      "DeletionPolicy": "Retain",
+      "Properties": Object {
+        "RetentionInDays": 731,
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "RiderStateTransitionManagementCDKRole6573A004": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": Object {
+                  "Fn::FindInMap": Array [
+                    "ServiceprincipalMap",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    "states",
+                  ],
+                },
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "RiderStateTransitionManagementCDKRoleDefaultPolicyD82CF21F": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sqs:SendMessage",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "RiderStateDLQCDK6A8B08DF",
+                  "Arn",
+                ],
+              },
+            },
+            Object {
+              "Action": "dynamodb:GetItem",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":dynamodb:",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":table/",
+                    Object {
+                      "Ref": "RiderStateTableCDKE307B11A",
+                    },
+                  ],
+                ],
+              },
+            },
+            Object {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "RiderStateValidationCDK1338B994",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "RiderStateValidationCDK1338B994",
+                          "Arn",
+                        ],
+                      },
+                      ":*",
+                    ],
+                  ],
+                },
+              ],
+            },
+            Object {
+              "Action": "dynamodb:UpdateItem",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::Join": Array [
+                  "",
+                  Array [
+                    "arn:",
+                    Object {
+                      "Ref": "AWS::Partition",
+                    },
+                    ":dynamodb:",
+                    Object {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    Object {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":table/",
+                    Object {
+                      "Ref": "RiderStateTableCDKE307B11A",
+                    },
+                  ],
+                ],
+              },
+            },
+            Object {
+              "Action": "sns:Publish",
+              "Effect": "Allow",
+              "Resource": Object {
+                "Ref": "RiderStateChangeEventCDKBCB6E71C",
+              },
+            },
+            Object {
+              "Action": Array [
+                "logs:CreateLogDelivery",
+                "logs:GetLogDelivery",
+                "logs:UpdateLogDelivery",
+                "logs:DeleteLogDelivery",
+                "logs:ListLogDeliveries",
+                "logs:PutResourcePolicy",
+                "logs:DescribeResourcePolicies",
+                "logs:DescribeLogGroups",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+                "xray:GetSamplingRules",
+                "xray:GetSamplingTargets",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+            Object {
+              "Action": Array [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable",
+              ],
+              "Effect": "Allow",
+              "Resource": Array [
+                Object {
+                  "Fn::GetAtt": Array [
+                    "RiderStateTableCDKE307B11A",
+                    "Arn",
+                  ],
+                },
+                Object {
+                  "Fn::Join": Array [
+                    "",
+                    Array [
+                      Object {
+                        "Fn::GetAtt": Array [
+                          "RiderStateTableCDKE307B11A",
+                          "Arn",
+                        ],
+                      },
+                      "/index/*",
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "RiderStateTransitionManagementCDKRoleDefaultPolicyD82CF21F",
+        "Roles": Array [
+          Object {
+            "Ref": "RiderStateTransitionManagementCDKRole6573A004",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "RiderStateValidationCDK1338B994": Object {
+      "DependsOn": Array [
+        "RiderStateValidationCDKServiceRole52EC8E67",
+      ],
+      "Properties": Object {
+        "Architectures": Array [
+          "arm64",
+        ],
+        "Code": Object {
+          "S3Bucket": Object {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
+          },
+          "S3Key": "7751bbd3241187cb72efbcbc46253e7f24e94542772c8348f6ef4f0008688485.zip",
+        },
+        "FunctionName": "RiderStateValidation-CDK",
+        "Handler": "app.handler",
+        "Role": Object {
+          "Fn::GetAtt": Array [
+            "RiderStateValidationCDKServiceRole52EC8E67",
+            "Arn",
+          ],
+        },
+        "Runtime": "python3.9",
+      },
+      "Type": "AWS::Lambda::Function",
+    },
+    "RiderStateValidationCDKServiceRole52EC8E67": Object {
+      "Properties": Object {
+        "AssumeRolePolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": Object {
+                "Service": "lambda.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": Array [
+          Object {
+            "Fn::Join": Array [
+              "",
+              Array [
+                "arn:",
+                Object {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+              ],
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+  },
+  "Rules": Object {
+    "CheckBootstrapVersion": Object {
+      "Assertions": Array [
+        Object {
+          "Assert": Object {
+            "Fn::Not": Array [
+              Object {
+                "Fn::Contains": Array [
+                  Array [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  Object {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;
