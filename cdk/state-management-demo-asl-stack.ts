@@ -55,6 +55,13 @@ export class StateManagementASLDemoStack extends cdk.Stack {
       "RiderStateTransitionManagement-ASL-CDK",
       {
         definitionBody: sfn.DefinitionBody.fromFile("rider-state-management.asl.json"),
+        definitionSubstitutions: {
+          QUEUE_URL: riderStateDLQ.queueUrl,
+          TABLE_NAME: riderStateTable.tableName,
+          TOPIC_ARN: riderStateChangeEvent.topicArn,
+          FUNCTION_ARN: riderStateValidation.functionArn
+        },
+
         stateMachineName: "RiderStateTransitionManagement-ASL-CDK",
         stateMachineType: sfn.StateMachineType.EXPRESS,
         tracingEnabled: true,
