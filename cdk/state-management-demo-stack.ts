@@ -178,7 +178,7 @@ export class StateManagementDemoStack extends cdk.Stack {
       this,
       "RiderStateTransitionManagement-CDK",
       {
-        definition: riderStateTransitionManagementStateMachineDefinition,
+        definitionBody: sfn.DefinitionBody.fromChainable(riderStateTransitionManagementStateMachineDefinition),
         stateMachineName: "RiderStateTransitionManagement-CDK",
         stateMachineType: sfn.StateMachineType.EXPRESS,
         tracingEnabled: true,

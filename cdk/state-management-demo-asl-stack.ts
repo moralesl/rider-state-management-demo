@@ -55,7 +55,7 @@ export class StateManagementASLDemoStack extends cdk.Stack {
       this,
       "RiderStateTransitionManagement-ASL-CDK",
       {
-        definition: new sfn.Pass(this, "StartState"),
+        definitionBody: sfn.DefinitionBody.fromFile("rider-state-management.asl.json"),
         stateMachineName: "RiderStateTransitionManagement-ASL-CDK",
         stateMachineType: sfn.StateMachineType.EXPRESS,
         tracingEnabled: true,
@@ -66,11 +66,6 @@ export class StateManagementASLDemoStack extends cdk.Stack {
         },
       }
     );
-
-    const cfnStatemachine = riderStateTransitionManagementStateMachine.node.defaultChild as sfn.CfnStateMachine;
-
-    const stateMachineDefinition = JSON.parse(fs.readFileSync("rider-state-management.asl.json", "utf8"));
-    cfnStatemachine.definitionString = JSON.stringify(stateMachineDefinition);
 
     riderStateValidation.grantInvoke(riderStateTransitionManagementStateMachine);
     riderStateChangeEvent.grantPublish(riderStateTransitionManagementStateMachine);
