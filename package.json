@@ -7,19 +7,21 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "cdk": "cdk"
+    "cdk": "cdk",
+    "prelocal": "cdk synth && cdk-asl-extractor cdk.out/StateManagementDemoStack.template.json && jq '.' asl-0.json > state-management.asl.json && rm asl-0.json && echo See also https://jeromevdl.medium.com/local-testing-of-cdk-defined-step-functions-state-machine-20759ad3c2a6",
+    "local": ""
   },
   "devDependencies": {
     "@types/jest": "^27.5.2",
     "@types/node": "10.17.27",
     "@types/prettier": "2.6.0",
-    "aws-cdk": "2.140.0",
-    "aws-cdk": "2.51.1",
+    "aws-cdk": "2.143.1",
+    "cdk-asl-extractor": "^1.0.2",
     "ts-node": "^10.9.1",
     "typescript": "~3.9.7"
   },
   "dependencies": {
-    "aws-cdk-lib": "2.140.0",
+    "aws-cdk-lib": "2.143.1",
     "constructs": "^10.0.0",
     "source-map-support": "^0.5.21"
   }
